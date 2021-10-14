@@ -1,6 +1,6 @@
 export default {
-  super_admin_email: "tan",
-  super_admin_pwd: "123",
+  super_admin_email: "letutan500@gmail.com",
+  super_admin_pwd: "1234567",
   super_admin_name: "Super Admin",
   port: 1337,
   host: "localhost",

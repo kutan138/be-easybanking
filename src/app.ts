@@ -3,6 +3,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 
 import indexRouter from "./routes/index";
+import deserializeUser from "./middleware/deserializeUser";
 
 const app = express();
 
@@ -10,6 +11,7 @@ const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
+app.use(deserializeUser);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

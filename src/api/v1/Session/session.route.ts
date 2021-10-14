@@ -4,13 +4,17 @@ import { createUserSessionSchema } from "./session.schema";
 import {
   createUserSessionHandler,
   getUserSessionsHandler,
+  invalidateUserSessionHandler,
 } from "./session.controller";
 const router = express.Router();
 
 router
   .route("/")
+  // Get the user's sessions
   .get(requiresUser, getUserSessionsHandler)
-  // Create a post
-  .post(validateRequest(createUserSessionSchema), createUserSessionHandler);
+  // Login
+  .post(validateRequest(createUserSessionSchema), createUserSessionHandler)
+  // Logout
+  .delete(requiresUser, invalidateUserSessionHandler);
 
 export default router;

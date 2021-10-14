@@ -39,7 +39,7 @@ export const createSuperUser = async () => {
   }
 };
 
-export async function findUser(query: FilterQuery<UserDocument>) {
+export async function findUserById(query: FilterQuery<UserDocument>) {
   return User.findOne(query).lean();
 }
 

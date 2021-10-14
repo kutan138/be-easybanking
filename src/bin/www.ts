@@ -13,13 +13,13 @@ import app from "../app";
 import http from "http";
 import connect from "../db/connect";
 import { AddressInfo } from "net";
+import config from "config";
 
 /**
  * Get port from environment and store in Express.
  */
-
-const port = normalizePort(process.env.PORT || "3000");
-app.set("port", port);
+const port = config.get("port") as string;
+app.set("port", normalizePort(port));
 
 /**
  * Create HTTP server.
