@@ -1,0 +1,30 @@
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.2);
+}
+.sider {
+  min-height: 100vh;
+  a.link {
+    /*Any style you want to have link on mouse over*/
+    display: flex;
+    align-items: center;
+    height: 40px;
+    line-height: 40px;
+    color: #ffffff;
+    padding-left: 24px;
+    &:hover {
+      &:not([class^="menu-active"]) {
+        background-color: #2684ff;
+      }
+    }
+  }
+  .menu-active {
+    /*Any style you want to have link that is active*/
+    background-color: #0c61db;
+    color: #ffffff;
+  }
+  .menu-icon {
+    margin-right: 10px;
+  }
+}
