@@ -1,53 +1,58 @@
-import { call, delay, fork, put, take } from "@redux-saga/core/effects";
+import { call, fork, put, take } from "@redux-saga/core/effects";
 import { PayloadAction } from "@reduxjs/toolkit";
-import authApi from "src/api/auth";
-import { LoginResponse } from "src/models/auth";
-import { setCookie } from "src/utils/AsyncStorage";
-import { authActions, LoginPayload } from "../slices/auth.slice";
 import { push } from "connected-react-router";
+import { race } from "redux-saga/effects";
+import authApi from "src/api/auth";
+import { removeCookie, setCookie } from "src/utils/AsyncStorage";
+import { authActions, LoginPayload } from "../slices/auth.slice";
+
+function* forwardTo(location: string) {
+  yield console.log(location);
+  yield put(push(location));
+}
 
 function* handleLogin(payload: LoginPayload) {
   try {
-    yield put(authActions.login());
-    const data: LoginResponse = yield call(authApi.login, payload);
-    if (!data) {
-      throw new Error("Login failed");
-    }
+    yield put(authActions.login(payload));
+    const { data } = yield call(authApi.login, payload);
     const { accessToken, refreshToken, user } = data;
-    setCookie("access_token", accessToken);
-    setCookie("refresh_token", refreshToken);
+    setCookie("accessToken", accessToken);
+    setCookie("refreshToken", refreshToken);
     yield put(authActions.loginSuccess(user));
+    return data;
   } catch (error: any) {
     yield put(authActions.loginFailed(error.message));
+    return false;
   }
-  // redirect to admin page
-  yield put(push("/dashboard"));
 }
 
-function* handleLogout() {
-  yield delay(500);
-  localStorage.removeItem("access_token");
-
-  // redireact to login page
-  yield put(push("/login"));
+export function* logoutFlow() {
+  while (true) {
+    yield take(authActions.logout.type);
+    removeCookie("accessToken");
+    forwardTo("/");
+  }
 }
-
+interface LoginFlowState {
+  auth: boolean;
+  logout: boolean;
+}
 function* watchLoginFlow() {
   while (true) {
-    const isLoggedIn = Boolean(localStorage.getItem("access_token"));
-    if (!isLoggedIn) {
-      const action: PayloadAction<LoginPayload> = yield take(
-        authActions.login.type
-      );
-      yield fork(handleLogin, action.payload);
+    const action: PayloadAction<LoginPayload> = yield take(
+      authActions.login.type
+    );
+    const { auth }: LoginFlowState = yield race({
+      auth: call(handleLogin, action.payload),
+      logout: take(authActions.logout.type),
+    });
+    if (auth) {
+      yield forwardTo("/dashboard");
     }
-
-    yield take(authActions.logout.type);
-    // handleLogout trước rồi mới quay lại loop
-    yield call(handleLogout);
   }
 }
 
 export function* authSaga() {
   yield fork(watchLoginFlow);
+  yield fork(logoutFlow);
 }

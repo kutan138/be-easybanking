@@ -32,7 +32,8 @@ export async function createUserSessionHandler(req: Request, res: Response) {
   });
 
   // send refresh & access token back
-  return res.send({ accessToken, refreshToken });
+  const data = { accessToken, refreshToken };
+  return res.send({ status: 200, data });
 }
 
 export async function invalidateUserSessionHandler(

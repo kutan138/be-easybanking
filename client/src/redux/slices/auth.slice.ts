@@ -14,13 +14,13 @@ export interface LoginPayload {
 
 export interface AuthState {
   isAuthenticated?: boolean;
-  isLoading: boolean;
+  isLogging: boolean;
   currentUser?: User;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
-  isLoading: false,
+  isLogging: false,
   currentUser: undefined,
 };
 
@@ -28,26 +28,26 @@ const authSlice = createSlice({
   name: "authSlice",
   initialState,
   reducers: {
-    login(state) {
-      state.isLoading = true;
+    login(state, action: PayloadAction<LoginPayload>) {
+      state.isLogging = true;
     },
     loginSuccess(state, action: PayloadAction<User>) {
-      state.isLoading = false;
+      state.isLogging = false;
       state.isAuthenticated = true;
       state.currentUser = action.payload;
     },
     loginFailed(state, action: PayloadAction<string>) {
-      state.isLoading = false;
+      state.isLogging = false;
       state.isAuthenticated = false;
     },
     register(state, action: PayloadAction<RegisterPayLoad>) {
-      state.isLoading = true;
+      state.isLogging = true;
     },
     registerSuccess(state, action: PayloadAction<User>) {
-      state.isLoading = false;
+      state.isLogging = false;
     },
     registerFailed(state, action: PayloadAction<string>) {
-      state.isLoading = false;
+      state.isLogging = false;
       state.isAuthenticated = false;
     },
     logout(state) {
